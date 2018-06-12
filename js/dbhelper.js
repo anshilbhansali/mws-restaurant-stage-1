@@ -147,6 +147,13 @@ class DBHelper {
   }
 
   /**
+   * Restaurant name.
+   */
+  static nameOfRestaurant(restaurant) {
+    return restaurant.name;
+  }
+
+  /**
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {

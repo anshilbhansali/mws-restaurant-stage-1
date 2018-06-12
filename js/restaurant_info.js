@@ -58,6 +58,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt = 'Picture of '+DBHelper.nameOfRestaurant(restaurant);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -116,24 +117,54 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  * Create review HTML and add it to the webpage.
  */
 createReviewHTML = (review) => {
-  const li = document.createElement('li');
+  const div = document.createElement('div');
+  div.style.width = "85%";
+  div.style.backgroundColor = "white";
+  div.style.borderColor = "white";
+  div.style.marginBottom = "20px";
+
+  const header_div = document.createElement('div');
+  header_div.style.backgroundColor = "black";
+  header_div.style.height = '25px';
+  header_div.style.paddingTop = '5px';
   const name = document.createElement('p');
+  name.style.display = 'inline';
+  name.style.color = 'white';
+  name.style.marginLeft = '15px';
   name.innerHTML = review.name;
-  li.appendChild(name);
+  header_div.appendChild(name);
 
   const date = document.createElement('p');
+  date.style.display = 'inline';
+  date.style.float = 'right';
+  date.style.marginTop = '-0.5px';
+  date.style.marginRight = '15px';
+  date.style.color = 'white';
   date.innerHTML = review.date;
-  li.appendChild(date);
+  header_div.appendChild(date);
+
+  div.appendChild(header_div);
+
+  const content_div = document.createElement('div');
+  content_div.style.padding = '15px';
+  content_div.style.paddingTop = '0px';
 
   const rating = document.createElement('p');
+  rating.style.borderRadius = '5px';
+  rating.style.backgroundColor = "orange";
+  rating.style.width = '70px';
+  rating.style.color = 'white';
+  rating.style.textAlign = 'center';
   rating.innerHTML = `Rating: ${review.rating}`;
-  li.appendChild(rating);
+  content_div.appendChild(rating);
 
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
-  li.appendChild(comments);
+  content_div.appendChild(comments);
 
-  return li;
+  div.appendChild(content_div);
+
+  return div;
 }
 
 /**
