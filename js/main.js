@@ -158,7 +158,7 @@ createRestaurantHTML = (restaurant) => {
   image.alt = 'Picture of '+DBHelper.nameOfRestaurant(restaurant);
   div.appendChild(image);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   name.style.width = "100%";
   div.appendChild(name);
