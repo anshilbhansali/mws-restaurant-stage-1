@@ -17,11 +17,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
 registerServiceWorker = () => {
   if (!navigator.serviceWorker) return;
 
-  navigator.serviceWorker.register('/sw.js').then(function(res){
-    console.log('SW registered woot!');
-  }).catch(function(error){
-    console.log('SW failed to register foook...', error);
-  });
+  let SW = false;   // FOR TESTING
+  if (SW){
+    navigator.serviceWorker.register('/sw.js').then(function(res){
+      console.log('SW registered woot!');
+    }).catch(function(error){
+      console.log('SW failed to register foook...', error);
+    });
+  }
 }
 
 /**
