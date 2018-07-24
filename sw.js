@@ -14,8 +14,14 @@ self.addEventListener('fetch', function(event){
 				// AND CACHE RESPONSE, FOR FUTURE USE.
 				return fetch(event.request).then(function(network_response){
 					// CACHE RESPONSE!!
-					mycache.put(event.request, network_response.clone());
 					console.log('served from network: ', event.request.url);
+					var url = new URL(event.request.url);
+					//dont add the restaraunt data to cache
+					if (url.hostname == 'localhost' && url.port == '1337')
+						return network_response;
+
+					//add rest to cache
+					var ret = mycache.put(event.request, network_response.clone());
 					return network_response;
 				});
 			});

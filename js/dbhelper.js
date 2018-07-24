@@ -13,34 +13,89 @@ class DBHelper {
   }
 
   /**
-   * Fetch all restaurants, FROM DEV SERVER
+   * Fetch all restaurants, FROM DEV SERVER OR IDB
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL).then(response => response.json())
-    .then(function(response){
-      //console.log(response);
-      if (response)
-        callback(null, response);
-      else
-        'No Restaurants', null
-    }).catch(function(error){
-      callback(error, null);
+    self.db_promise.then(function(restaurants_db){
+      var tx = restaurants_db.transaction('restaurants');
+      tx.objectStore('restaurants').getAll()
+      .then(function(data){
+
+        if (data.length != 10){
+          //fetch from server
+          fetch(DBHelper.DATABASE_URL).then(response => response.json())
+          .then(function(response){
+            //console.log(response);
+            if (response){
+              console.log('fetched restaurants from Server');
+
+              //ADD TO IDB
+              self.db_promise.then(function(restaurants_db){
+                var tx = restaurants_db.transaction('restaurants', 'readwrite');
+                for (var restaurant of response){
+                  tx.objectStore('restaurants').put(restaurant, restaurant['id']);
+                }
+                callback(null, response);
+              }); 
+            }
+            else
+              callback('No Restaurants', null);
+          }).catch(function(error){
+            console.log('Failed to fetch from server: ', error);
+            callback(error, null);
+          });
+
+        }
+        else{
+          //retrieved data from idb
+          console.log('fetched restaurants from IDB');
+          callback(null, data);
+        }
+
+      });  
+
     });
   }
 
   /**
-   * Fetch a restaurant by its ID., FROM DEV SERVER
+   * Fetch a restaurant by its ID, FROM DEV SERVER or IDB
    */
   static fetchRestaurantById(id, callback) {
-    fetch(`${DBHelper.DATABASE_URL}/${id}`).then(response => response.json())
-    .then(function(response){
-      //console.log(response);
-      if (response)
-        callback(null, response);
-      else
-        'Restaurant does not exist', null
-    }).catch(function(error){
-      callback(error, null);
+    self.db_promise.then(function(restaurants_db){
+      var tx = restaurants_db.transaction('restaurants');
+      tx.objectStore('restaurants').get(parseInt(id))
+      .then(function(restaurant){
+        if (!restaurant){
+          //not in idb, fetch from server
+          fetch(`${DBHelper.DATABASE_URL}/${id}`).then(response => response.json())
+          .then(function(response){
+            //console.log(response);
+            if (response){
+              console.log(`fetched restaurant ${response['name']} from Server`);
+
+              //ADD TO IDB
+              self.db_promise.then(function(restaurants_db){
+                var tx = restaurants_db.transaction('restaurants', 'readwrite');
+                tx.objectStore('restaurants').put(response, response['id']);
+                callback(null, response);
+              }); 
+            }
+            else
+              callback('No Restaurants', null);
+          }).catch(function(error){
+            console.log('Failed to fetch from server: ', error);
+            callback(error, null);
+          });
+
+        }
+        else{
+          //retrieved data from idb
+          console.log(`fetched restaurant ${restaurant['name']} from IDB`);
+          callback(null, restaurant);
+        }
+
+      });  
+
     });
   }
 

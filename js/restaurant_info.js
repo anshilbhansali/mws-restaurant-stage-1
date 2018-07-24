@@ -1,6 +1,23 @@
 let restaurant;
 var map;
 
+document.addEventListener('DOMContentLoaded', (event) => {
+  console.log('DOMContentLoaded, restaurant', self);
+  openIDB(); 
+});
+
+openIDB = () => {
+  if (!('indexedDB' in window)) {
+    console.log('This browser doesn\'t support IndexedDB');
+    return;
+  }
+
+  self.db_promise = idb.open('restaurants-db', 1, function(db){
+    //only run once, when version num is incremented
+    db.createObjectStore('restaurants', {keyPath: 'id'});
+  });
+}
+
 /**
  * Initialize Google map, called from HTML.
  */

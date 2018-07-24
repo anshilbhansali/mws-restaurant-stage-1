@@ -1,3 +1,4 @@
+
 let restaurants,
   neighborhoods,
   cuisines
@@ -8,21 +9,35 @@ var markers = []
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+  console.log('DOMContentLoaded, main', self);
+  openIDB();
   fetchNeighborhoods();
   fetchCuisines();
   registerServiceWorker();
-
+  
 });
+
+openIDB = () => {
+  if (!('indexedDB' in window)) {
+    console.log('This browser doesn\'t support IndexedDB');
+    return;
+  }
+
+  self.db_promise = idb.open('restaurants-db', 1, function(db){
+    //only run once, when version num is incremented
+    db.createObjectStore('restaurants', {keyPath: 'id'});
+  });
+}
 
 registerServiceWorker = () => {
   if (!navigator.serviceWorker) return;
 
-  let SW = false;   // FOR TESTING
+  let SW = true;   // FOR TESTING
   if (SW){
     navigator.serviceWorker.register('/sw.js').then(function(res){
-      console.log('SW registered woot!');
+      console.log('SW registered');
     }).catch(function(error){
-      console.log('SW failed to register foook...', error);
+      console.log('SW failed to register', error);
     });
   }
 }
